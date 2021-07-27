@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
+# this is a TWpay QRcode image generation program.
+# usage qrtwpay.py [bankcode] [accountnumber]
 import qrcode
 import sys
 import string
 import secrets
+# code snippet from secrets module
 def rstring(n):
 	alpha = string.ascii_letters + string.digits
 	return ''.join(secret.choice(alpha) for i in range(n))
-
+# check if it is a integer
 def is_integer(n):
 	try:
 		float(n)
@@ -14,7 +17,7 @@ def is_integer(n):
 		return False
 	else:
 		return float(n).is_integer()
-
+# main program.
 if len(sys.argv) !=3:
 		print('Error: require 2 arguments.')
 elif ((int(sys.argv[1]) > 826) or (int(sys.argv[1]) < 4) or (len(sys.argv[1]) != 3)):
