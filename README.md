@@ -1,3 +1,3 @@
 # mini-codes
 My independent codes, mostly python.
-Ssomething required external modules.
+Something required external modules.
