@@ -23,3 +23,4 @@ def netcheck(addr,IPv4=True):
 
 if __name__ = '__main__':
 	if netcheck('192.168.1.1'):
+		print('check ok.')
