@@ -7,8 +7,8 @@ except ValueError:
 except NetMaskValueError:
 	pass
 else:
-	ave = False
-	nve = False
+#	ave = False
+#	nve = False
 	print(f' Netmask is {ipad.prefixlen}.')
 finally:
 	if ('ipad' not in locals() or 'ipad' not in globals()):
