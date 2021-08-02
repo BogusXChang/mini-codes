@@ -16,20 +16,20 @@ def skeylist(psk=False):
 	klist=list()
 	if psk:
 		klist.append(rrs(check_output(['wg','genpsk'])))
-	pk=rrs(check_output(['wg','genkey']))
-	klist.append(ppk)
-	pbk=rrs(check_output(['wg','pubkey'],input=ppk))
+	pk = rrs(check_output(['wg','genkey']))
+	klist.append(pk)
+	pbk = rrs(check_output(['wg','pubkey'],input=ppk))
 	klist.append(pbk)
 	return klist
 
-if '__name__'=='__main__':
+if __name__=='__main__':
 	count=16
 	server_key = skeylist()
 	server_address = req.get('https://ifconfig.me').text()
 	lport = port()
 	iplist=list(ipnet.hosts())
-	for c in range(count):
-		if c == 0:
+	while True:
+		if (c == 0):
 			fn = "server.conf"
 			print(f'Writing {fn}.')
 			with open(fn,'w') as sfile:
@@ -38,7 +38,8 @@ if '__name__'=='__main__':
 				sfile.write(f'ListenPort = {lport}')
 				sfile.write(f'PrivateKey = {server_key[0]}')
 				sfile.close()
-		else:
+			c = c + 1
+		elif(c <= count):
 			fn = f'client_{c}.conf'
 			client_key = skeylist()
 			clport = port()
@@ -60,4 +61,8 @@ if '__name__'=='__main__':
 				cfile.write('AllowIPs = {iplist[0]}/32')
 				cfile.write('EndPoint = {server_address}:{lport}')
 				cfile.close()
+			c = c + 1
+		else:
+			print('create {c} configuraton files finished.')
+			break
 
