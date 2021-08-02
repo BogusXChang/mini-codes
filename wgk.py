@@ -46,13 +46,13 @@ if __name__=='__main__':
 			clport = port()
 			print(f'Adding peer {c} to server.conf.')
 			with open('server.conf','a') as sfile:
-				sfile.write('[Peer]')
+				sfile.write('[Peer]\n')
 				sfile.write(f'PublicKey = {client_key[1]}\n')
 				sfile.write(f'AllowIPs = {iplist[c]}/32\n')
 				sfile.close()
 			print(f'Writing {fn}.')
 			with open(fn,'a') as cfile:
-				cfile.write('[Interface]')
+				cfile.write('[Interface]\n')
 				cfile.write('Address = {iplist[c]}/24\n')
 				cfile.write('ListenPort = {clport}\n')
 				cfile.write('PrivateKey = {client_key[0]}\n')
