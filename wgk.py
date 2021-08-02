@@ -18,7 +18,7 @@ def skeylist(psk=False):
 		klist.append(rrs(check_output(['wg','genpsk'])))
 	pk = rrs(check_output(['wg','genkey']))
 	klist.append(pk)
-	pbk = rrs(check_output(['wg','pubkey'],input=ppk))
+	pbk = rrs(check_output(['wg','pubkey'],input=pk))
 	klist.append(pbk)
 	return klist
 
