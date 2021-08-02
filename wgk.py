@@ -34,10 +34,10 @@ if __name__=='__main__':
 			fn = "server.conf"
 			print(f'Writing {fn}.')
 			with open(fn,'w') as sfile:
-				sfile.write('[Interface]')
-				sfile.write(f'Address = {iplist[c]}')
-				sfile.write(f'ListenPort = {lport}')
-				sfile.write(f'PrivateKey = {server_key[0]}')
+				sfile.write('[Interface]\n')
+				sfile.write(f'Address = {iplist[c]}\n')
+				sfile.write(f'ListenPort = {lport}\n')
+				sfile.write(f'PrivateKey = {server_key[0]}\n')
 				sfile.close()
 			c = c + 1
 		elif(c <= count):
@@ -47,20 +47,20 @@ if __name__=='__main__':
 			print(f'Adding peer {c} to server.conf.')
 			with open('server.conf','a') as sfile:
 				sfile.write('[Peer]')
-				sfile.write(f'PublicKey = {client_key[1]}')
-				sfile.write(f'AllowIPs = {iplist[c]}/32')
+				sfile.write(f'PublicKey = {client_key[1]}\n')
+				sfile.write(f'AllowIPs = {iplist[c]}/32\n')
 				sfile.close()
 			print(f'Writing {fn}.')
 			with open(fn,'a') as cfile:
 				cfile.write('[Interface]')
-				cfile.write('Address = {iplist[c]}/24')
-				cfile.write('ListenPort = {clport}')
-				cfile.write('PrivateKey = {client_key[0]}')
-				cfile.write('MTU = 1420')
-				cfile.write('[Peer]')
-				cfile.write('PublicKey = {server_key[1]}')
-				cfile.write('AllowIPs = {iplist[0]}/32')
-				cfile.write('EndPoint = {server_address}:{lport}')
+				cfile.write('Address = {iplist[c]}/24\n')
+				cfile.write('ListenPort = {clport}\n')
+				cfile.write('PrivateKey = {client_key[0]}\n')
+				cfile.write('MTU = 1420\n')
+				cfile.write('[Peer]\n')
+				cfile.write('PublicKey = {server_key[1]}\n')
+				cfile.write('AllowIPs = {iplist[0]}/32\n')
+				cfile.write('EndPoint = {server_address}:{lport}\n')
 				cfile.close()
 			c = c + 1
 		else:
