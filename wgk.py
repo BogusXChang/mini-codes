@@ -9,7 +9,8 @@ def port():
 	return 1025+sec.randbelow(64509)
 #remove newline
 def rrs(str):
-	retrun str.rstrip('\n')
+	# string-bytes problemic.
+	retrun str.decode().rstrip('\n')
 #generate a list of key
 def skeylist(psk=False):
 	klist=list()
