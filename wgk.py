@@ -29,7 +29,7 @@ if '__name__'=='__main__':
 	lport = port()
 	iplist=list(ipnet.hosts())
 	for c in range(count):
-		if c = 0:
+		if c == 0:
 			fn = "server.conf"
 			print(f'Writing {fn}.')
 			with open(fn,'w') as sfile:
