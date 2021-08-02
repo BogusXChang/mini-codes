@@ -58,6 +58,7 @@ if __name__=='__main__':
 				cfile.write('ListenPort = {clport}\n')
 				cfile.write('PrivateKey = {client_key[0]}\n')
 				cfile.write('MTU = 1420\n')
+				cfile.write('\n')
 				cfile.write('[Peer]\n')
 				cfile.write('PublicKey = {server_key[1]}\n')
 				cfile.write('AllowIPs = {iplist[0]}/32\n')
