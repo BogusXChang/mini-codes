@@ -16,8 +16,8 @@ def skeylist(psk=False):
 	klist=list()
 	if psk:
 		klist.append(rrs(check_output(['wg','genpsk'])))
-	pk = rrs(check_output(['wg','genkey']))
-	klist.append(pk)
+	pk = check_output(['wg','genkey'])
+	klist.append(rrs(pk))
 	pbk = rrs(check_output(['wg','pubkey'],input=pk))
 	klist.append(pbk)
 	return klist
@@ -25,7 +25,7 @@ def skeylist(psk=False):
 if __name__=='__main__':
 	count=16
 	server_key = skeylist()
-	server_address = req.get('https://ifconfig.me').text()
+	server_address = req.get('https://ifconfig.me').text
 	lport = port()
 	iplist=list(ipnet.hosts())
 	while True:
