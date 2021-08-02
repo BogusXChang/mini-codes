@@ -23,6 +23,7 @@ def skeylist(psk=False):
 	return klist
 
 if __name__=='__main__':
+	c=0
 	count=16
 	server_key = skeylist()
 	server_address = req.get('https://ifconfig.me').text
