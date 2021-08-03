@@ -13,7 +13,7 @@ def rrs(str):
 	return str.decode().rstrip('\n')
 #generate a list of key
 def skeylist(psk=False):
-	klist=list()
+	klist = list()
 	if psk:
 		klist.append(rrs(check_output(['wg','genpsk'])))
 	pk = check_output(['wg','genkey'])
@@ -22,13 +22,13 @@ def skeylist(psk=False):
 	klist.append(pbk)
 	return klist
 
-if __name__=='__main__':
-	c=0
-	count=16
+if __name__ == '__main__':
+	c = 0
+	count = 16
 	server_key = skeylist()
 	server_address = req.get('https://ifconfig.me').text
 	lport = port()
-	iplist=list(ipnet.hosts())
+	iplist = list(ipnet.hosts())
 	while True:
 		if (c == 0):
 			fn = "server.conf"
@@ -68,4 +68,3 @@ if __name__=='__main__':
 		else:
 			print('create {c} configuraton files finished.')
 			break
-
