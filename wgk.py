@@ -4,6 +4,9 @@ from subprocess import check_output
 import requests as req
 
 ipnet = ipa.IPv4Network('172.17.1.0/24')
+#Add Hex strip to future function addition.
+def hexstrip(intstr):
+	return(hex(intstr)[2:])
 #generate port number
 def port():
 	return 1025+sec.randbelow(64509)
