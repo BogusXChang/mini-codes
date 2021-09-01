@@ -17,7 +17,7 @@ args = parser.parse_args()
 def rstring(n):
 	alpha = string.ascii_letters + string.digits
 	return ''.join(secret.choice(alpha) for i in range(n))
-# check if it is a integer
+#check if it is a integer
 #def is_integer(n):
 #	try:
 #		float(n)
