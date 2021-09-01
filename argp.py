@@ -1,6 +1,6 @@
 import argparse as argp
 import ipaddress as ipa
-ap = argp.ArgumentParser()
+ap = argp.ArgumentParser(prog="ncheck3",description="Validation of IPv4/v6 addresses. and preacting of argparse module.")
 apg = ap.add_mutually_exclusive_group()
 apg.add_argument("-4","--ipv4",action="store_true",help="check IPv4 addresses.")
 apg.add_argument("-6","--ipv6",action="store_true",help="check IPv6 addresses.")
