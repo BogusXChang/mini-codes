@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # this is a TWpay QRcode image generation program.
-# usage qrtwpay.py [bankcode] [accountnumber]
+# usage qrtwpay.py [bankcode] [accountnumber] [amount] [description]
 import qrcode
 import sys
 import string
