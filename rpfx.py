@@ -34,5 +34,5 @@ if __name__ == '__main__':
 		if arg.ipv6:
 			print(f'v6 prefix {random_prefix(IPv4=False)}')
 		else:
-			print(f'prefix {random_prefix()}')		
+			print(f'prefix {random_prefix()}')
 
