@@ -2,6 +2,12 @@ import ipaddress as ipa
 import secrets as sec
 from subprocess import check_output
 import requests as req
+# Initially implementation argparse module.
+import argparse as parg
+ap = parg.ArgumentParser(prog='wgk2',description='generate Wireguard configuration.')
+ap.addArgument("count",type=int,default=16,nargs='?',help="Number of configuration files generated. default: 16")
+ap.addArgument("-s","--preshared",action="store_true",help="Use pre-shared Keys.")
+ap.addArgument("-S","--server",action="store_true",help="Server mode .")
 # required wireguard-tools to work.
 ipnet = ipa.IPv4Network('172.17.1.0/24')
 #Add Hex strip to future function addition.
@@ -14,21 +20,21 @@ def port():
 def rrs(str):
 	# string-bytes problemic.
 	return str.decode().rstrip('\n')
-#generate a list of key
+#generate a dictionary of key
 def skeylist(psk=False):
-	klist = list()
+	klist = {}
 	if psk:
-		klist.append(rrs(check_output(['wg','genpsk'])))
+		klist ['psk'] = rrs(check_output(['wg','genpsk']))
 	pk = check_output(['wg','genkey'])
-	klist.append(rrs(pk))
-	pbk = rrs(check_output(['wg','pubkey'],input=pk))
-	klist.append(pbk)
+	klist['private'] = rrs(pk)
+	klist['public'] = rrs(check_output(['wg','pubkey'],input=pk))
 	return klist
 
 if __name__ == '__main__':
 	c = 0
-	count = 16
-	server_key = skeylist()
+	ag = ap.parse_args()
+	count = ag.count
+	psk = ag.preshared
 	server_address = req.get('https://ifconfig.me').text
 	lport = port()
 	iplist = list(ipnet.hosts())
@@ -40,7 +46,12 @@ if __name__ == '__main__':
 				sfile.write('[Interface]\n')
 				sfile.write(f'Address = {iplist[c]}/24\n')
 				sfile.write(f'ListenPort = {lport}\n')
-				sfile.write(f'PrivateKey = {server_key[0]}\n')
+				sfile.write('PrivateKey = {}\n'.format(klist['private']))
+				# Server mode.
+				if ag.server:
+					sfile.write("# please change eth0 to real internet-connected interface.")
+					sfile.write("PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE")
+					sfile.write("PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE")
 				sfile.close()
 			c = c + 1
 		elif(c <= count):
@@ -51,7 +62,9 @@ if __name__ == '__main__':
 			with open('server.conf','a') as sfile:
 				sfile.write('\n')
 				sfile.write('[Peer]\n')
-				sfile.write(f'PublicKey = {client_key[1]}\n')
+				if psk == True:
+					sfile.write('PresharedKey = {}\n'.format(client_key['psk']))
+				sfile.write('PublicKey = {}\n'.format(client_key['public']))
 				sfile.write(f'AllowIPs = {iplist[c]}/32\n')
 				sfile.close()
 			print(f'Writing {fn}.')
@@ -59,12 +72,18 @@ if __name__ == '__main__':
 				cfile.write('[Interface]\n')
 				cfile.write('Address = {iplist[c]}/24\n')
 				cfile.write('ListenPort = {clport}\n')
-				cfile.write('PrivateKey = {client_key[0]}\n')
+				cfile.write('PrivateKey = {}\n'.format(client_key['private']))
 				cfile.write('MTU = 1420\n')
 				cfile.write('\n')
 				cfile.write('[Peer]\n')
-				cfile.write('PublicKey = {server_key[1]}\n')
-				cfile.write('AllowIPs = {iplist[0]}/32\n')
+				if psk == True:
+					cfile.write('PresharedKey = {}\n'.format(client_key['psk']))
+				cfile.write('PublicKey = {}\n'.format(client_key['public']))
+				# Server mode.
+				if ag.server:
+					cfile.write("AllowedIPs = 0.0.0.0/0, ::/0")
+				else:
+					cfile.write(f'AllowIPs = {iplist[0]}/32\n')
 				cfile.write('EndPoint = {server_address}:{lport}\n')
 				cfile.close()
 			c = c + 1
