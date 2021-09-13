@@ -68,7 +68,7 @@ def is_valid_ipv6(ip):
         $
     """, re.VERBOSE | re.IGNORECASE | re.DOTALL)
     return pattern.match(ip) is not None
-
+# IPv4 prefix check
 def v4_prefix(addr):
     if addr[-3] == '/':
         pfx = int(addr[-2:])
@@ -77,7 +77,7 @@ def v4_prefix(addr):
         pfx = int(addr[-1])
         adr = is_valid_ipv4(addr[:-1])
     else:
-        if is_valid_ipv4(addr): 
+        if is_valid_ipv4(addr):
             return 32
         else:
             return False
@@ -85,7 +85,7 @@ def v4_prefix(addr):
         return False
     else:
         return pfx
-
+# IPv6 prefix check
 def v6_prefix(addr):
     slash = addr.find('/')
     if slash == -1:

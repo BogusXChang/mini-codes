@@ -57,7 +57,7 @@ if __name__ == '__main__':
 			c = c + 1
 		elif(c <= count):
 			fn = f'client_{c}.conf'
-			if psk == True:
+			if psk:
 				client_key = skeylist(psk=True)
 			else:
 				client_key = skeylist()
