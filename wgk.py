@@ -36,6 +36,7 @@ if __name__ == '__main__':
 	count = ag.count
 	psk = ag.preshared
 	server_address = req.get('https://ifconfig.me').text
+	server_key = skeylist()
 	lport = port()
 	iplist = list(ipnet.hosts())
 	while True:
@@ -56,7 +57,10 @@ if __name__ == '__main__':
 			c = c + 1
 		elif(c <= count):
 			fn = f'client_{c}.conf'
-			client_key = skeylist()
+			if psk == True:
+				client_key = skeylist(psk=True)
+			else:
+				client_key = skeylist()
 			clport = port()
 			print(f'Adding peer {c} to server.conf.')
 			with open('server.conf','a') as sfile:
