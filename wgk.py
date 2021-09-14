@@ -6,15 +6,33 @@ import requests as req
 import argparse as parg
 ap = parg.ArgumentParser(prog='wgk2',description='generate Wireguard configuration.')
 ap.addArgument("count",type=int,default=16,nargs='?',help="Number of configuration files generated. default: 16")
-ap.addArgument("prefix",type=str,default="DEF",nargs='?',help="IPv4 prefix ,default: random generated RFC1918 prefix.")
+ap.addArgument("prefix",type=str,default="DEF",nargs='?',help="IPv4 prefix ,default: random generated RFC1918 /24 prefix.")
 ap.addArgument("-6","--ipv6",type=str,default="DEF",nargs='?',help="IPv6 prefix ,default: Random RFC4197 ULA /64 prefix.")
 ap.addArgument("-s","--preshared",action="store_true",help="Use pre-shared Keys.")
 ap.addArgument("-S","--server",action="store_true",help="Server mode .")
+rfc1918_prefixes = list(IPv4Network('192.168.0.0/16').subnets(new_prefix=24))
+rfc1918_prefixes.extend(list(IPv4Network('172.16.0.0/12').subnets(new_prefix=24)))
+rfc1918_prefixes.extend(list(IPv4Network('10.0.0.0/8').subnets(new_prefix=24)))
+def random_prefix(IPv4=True):
+	if IPv4:
+		return rfc1918_prefixes[randrange(69888)]
+	else:
+		al = list()
+		for k in range(4):
+			if k == 0:
+				ri = getrandbits(8)
+				if ri < 16:
+					al.append('fd{}'.format(hexstrip(ri).zfill(2)))
+				else:
+					al.append(f'fd{hexstrip(ri)}')
+			else:
+				al.append(hexstrip(getrandbits(16)))
+		rad = ':'.join(al)
+	return IPv6Network(f'{rad}::/64')
 # required wireguard-tools to work.
-ipnet = ipa.IPv4Network('172.17.1.0/24')
-#Add Hex strip to future function addition.
+# Add Hex strip to future function addition.
 def hexstrip(intstr):
-	return(hex(intstr)[2:])
+	return hex(intstr)[2:]
 #generate port number
 def port():
 	return 1025+sec.randbelow(64509)
@@ -35,6 +53,12 @@ def skeylist(psk=False):
 if __name__ == '__main__':
 	c = 0
 	ag = ap.parse_args()
+	if ag.prefix == "DEF"
+		ipnet=random_prefix()
+	elif v4_prefix(ag.prefix):
+		ipnet=ipa.IPv4Network(ag.prefix)
+	else:
+		ipnet=random_prefix()	
 	count = ag.count
 	psk = ag.preshared
 	server_address = req.get('https://ifconfig.me').text
