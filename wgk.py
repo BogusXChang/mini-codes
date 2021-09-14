@@ -6,6 +6,8 @@ import requests as req
 import argparse as parg
 ap = parg.ArgumentParser(prog='wgk2',description='generate Wireguard configuration.')
 ap.addArgument("count",type=int,default=16,nargs='?',help="Number of configuration files generated. default: 16")
+ap.addArgument("prefix",type=str,default="DEF",nargs='?',help="IPv4 prefix ,default: random generated RFC1918 prefix.")
+ap.addArgument("-6","--ipv6",type=str,default="DEF",nargs='?',help="IPv6 prefix ,default: Random RFC4197 ULA /64 prefix.")
 ap.addArgument("-s","--preshared",action="store_true",help="Use pre-shared Keys.")
 ap.addArgument("-S","--server",action="store_true",help="Server mode .")
 # required wireguard-tools to work.
