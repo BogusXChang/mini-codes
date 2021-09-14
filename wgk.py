@@ -100,8 +100,8 @@ if __name__ == '__main__':
 			print(f'Writing {fn}.')
 			with open(fn,'a') as cfile:
 				cfile.write('[Interface]\n')
-				cfile.write('Address = {iplist[c]}/24\n')
-				cfile.write('ListenPort = {clport}\n')
+				cfile.write(f'Address = {iplist[c]}/24\n')
+				cfile.write(f'ListenPort = {clport}\n')
 				cfile.write('PrivateKey = {}\n'.format(client_key['private']))
 				cfile.write('MTU = 1420\n')
 				cfile.write('\n')
@@ -114,9 +114,9 @@ if __name__ == '__main__':
 					cfile.write("AllowedIPs = 0.0.0.0/0, ::/0")
 				else:
 					cfile.write(f'AllowIPs = {iplist[0]}/32\n')
-				cfile.write('EndPoint = {server_address}:{lport}\n')
+				cfile.write(f'EndPoint = {server_address}:{lport}\n')
 				cfile.close()
 			c = c + 1
 		else:
-			print('create {c} configuraton files finished.')
+			print(f'create {c} configuraton files finished.')
 			break
