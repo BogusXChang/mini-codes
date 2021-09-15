@@ -10,6 +10,7 @@ ap.addArgument("prefix",type=str,default="DEF",nargs='?',help="IPv4 prefix ,defa
 ap.addArgument("-6","--ipv6",type=str,default="DEF",nargs='?',help="IPv6 prefix ,default: Random RFC4197 ULA /64 prefix.")
 ap.addArgument("-s","--preshared",action="store_true",help="Use pre-shared Keys.")
 ap.addArgument("-S","--server",action="store_true",help="Server mode .")
+# prefix list.
 rfc1918_prefixes = list(IPv4Network('192.168.0.0/16').subnets(new_prefix=24))
 rfc1918_prefixes.extend(list(IPv4Network('172.16.0.0/12').subnets(new_prefix=24)))
 rfc1918_prefixes.extend(list(IPv4Network('10.0.0.0/8').subnets(new_prefix=24)))
@@ -30,7 +31,6 @@ def random_prefix(IPv4=True):
 		rad = ':'.join(al)
 	return IPv6Network(f'{rad}::/64')
 # required wireguard-tools to work.
-# Add Hex strip to future function addition.
 def hexstrip(intstr):
 	return hex(intstr)[2:]
 #generate port number
@@ -58,13 +58,22 @@ if __name__ == '__main__':
 	elif v4_prefix(ag.prefix):
 		ipnet=ipa.IPv4Network(ag.prefix)
 	else:
-		ipnet=random_prefix()	
+		print("Warning: network specified is invalid. Use random ULA.")
+		ipnet=random_prefix()
 	count = ag.count
 	psk = ag.preshared
 	server_address = req.get('https://ifconfig.me').text
 	server_key = skeylist()
 	lport = port()
 	iplist = list(ipnet.hosts())
+	if ag.server and ag.ipv6:
+		if ag.ipv6 == "DEF":
+			prefix6 = random_prefix(IPv4=False)
+		elif cip.v6_prefix(ag.ipv6):
+			prefix6 = ipa.IPv6Network(ag.ipv6)
+		else:
+			print("WARNING: prefix invalid , use ULA.")
+			prefix6 = random_prefix(IPv4=False)
 	while True:
 		if (c == 0):
 			fn = "server.conf"
@@ -78,7 +87,15 @@ if __name__ == '__main__':
 				if ag.server:
 					sfile.write("# please change eth0 to real internet-connected interface.")
 					sfile.write("PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE")
+					if ag.ipv6:
+						sfile.write('PostUp = echo 1 > /proc/sys/net/ipv6/conf/eth0/proxy_ndp \n')
+						for k in range(ag.count):
+							sfile.write(f'PostUp = ip neigh add proxy {prefix6[k]} dev eth0 \n')
 					sfile.write("PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE")
+					if ag.ipv6:
+						sfile.write('PostDown = echo 0 > /proc/sys/net/ipv6/conf/eth0/proxy_ndp \n')
+						for k in range(ag.count):
+							sfile.write(f'PostDown = ip neigh del proxy {prefix6[k]} dev eth0')
 				sfile.close()
 			c = c + 1
 		elif(c <= count):
