@@ -17,18 +17,18 @@ rfc1918_prefixes.extend(list(IPv4Network('172.16.0.0/12').subnets(new_prefix=24)
 rfc1918_prefixes.extend(list(IPv4Network('10.0.0.0/8').subnets(new_prefix=24)))
 def random_prefix(IPv4=True):
 	if IPv4:
-		return rfc1918_prefixes[randrange(69888)]
+		return rfc1918_prefixes[sec.randrange(69888)]
 	else:
 		al = list()
 		for k in range(4):
 			if k == 0:
-				ri = getrandbits(8)
+				ri = sec.randbits(8)
 				if ri < 16:
 					al.append('fd{}'.format(hexstrip(ri).zfill(2)))
 				else:
 					al.append(f'fd{hexstrip(ri)}')
 			else:
-				al.append(hexstrip(getrandbits(16)))
+				al.append(hexstrip(sec.randbits(16)))
 		rad = ':'.join(al)
 	return IPv6Network(f'{rad}::/64')
 # required wireguard-tools to work.
