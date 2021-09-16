@@ -2,6 +2,7 @@ import ipaddress as ipa
 import secrets as sec
 from subprocess import check_output
 import requests as req
+import cip
 # Initially implementation argparse module.
 import argparse as parg
 ap = parg.ArgumentParser(prog='wgk2',description='generate Wireguard configuration.')
@@ -90,12 +91,12 @@ if __name__ == '__main__':
 					if ag.ipv6:
 						sfile.write('PostUp = echo 1 > /proc/sys/net/ipv6/conf/eth0/proxy_ndp \n')
 						for k in range(ag.count):
-							sfile.write(f'PostUp = ip neigh add proxy {prefix6[k]} dev eth0 \n')
+							sfile.write(f'PostUp = ip neigh add proxy {prefix6[k+1]} dev eth0 \n')
 					sfile.write("PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE")
 					if ag.ipv6:
 						sfile.write('PostDown = echo 0 > /proc/sys/net/ipv6/conf/eth0/proxy_ndp \n')
 						for k in range(ag.count):
-							sfile.write(f'PostDown = ip neigh del proxy {prefix6[k]} dev eth0')
+							sfile.write(f'PostDown = ip neigh del proxy {prefix6[k+1]} dev eth0')
 				sfile.close()
 			c = c + 1
 		elif(c <= count):
@@ -112,7 +113,10 @@ if __name__ == '__main__':
 				if psk == True:
 					sfile.write('PresharedKey = {}\n'.format(client_key['psk']))
 				sfile.write('PublicKey = {}\n'.format(client_key['public']))
-				sfile.write(f'AllowIPs = {iplist[c]}/32\n')
+				if ag.ipv6:
+					sfile.write(f"AllowIPs {iplist[c]}/32} , {prefix6[c+1]}/128")
+				else:
+					sfile.write(f'AllowIPs = {iplist[c]}/32\n')
 				sfile.close()
 			print(f'Writing {fn}.')
 			with open(fn,'a') as cfile:
@@ -129,6 +133,8 @@ if __name__ == '__main__':
 				# Server mode.
 				if ag.server:
 					cfile.write("AllowedIPs = 0.0.0.0/0, ::/0")
+				elif ag.ipv6:
+					cfile.write(f"AllowIPs = {iplist[0]}/32 , {prefix6[1]}/128 \n")
 				else:
 					cfile.write(f'AllowIPs = {iplist[0]}/32\n')
 				cfile.write(f'EndPoint = {server_address}:{lport}\n')
