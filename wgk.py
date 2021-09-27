@@ -2,7 +2,7 @@ import ipaddress as ipa
 import secrets as sec
 from subprocess import check_output
 import requests as req
-import cip
+import checkip as cip
 # Initially implementation argparse module.
 import argparse as parg
 ap = parg.ArgumentParser(prog='wgk2',description='generate Wireguard configuration.')
@@ -12,9 +12,9 @@ ap.addArgument("-6","--ipv6",type=str,default="DEF",nargs='?',help="IPv6 prefix 
 ap.addArgument("-s","--preshared",action="store_true",help="Use pre-shared Keys.")
 ap.addArgument("-S","--server",action="store_true",help="Server mode .")
 # prefix list.
-rfc1918_prefixes = list(IPv4Network('192.168.0.0/16').subnets(new_prefix=24))
-rfc1918_prefixes.extend(list(IPv4Network('172.16.0.0/12').subnets(new_prefix=24)))
-rfc1918_prefixes.extend(list(IPv4Network('10.0.0.0/8').subnets(new_prefix=24)))
+rfc1918_prefixes = list(ipa.IPv4Network('192.168.0.0/16').subnets(new_prefix=24))
+rfc1918_prefixes.extend(list(ipa.IPv4Network('172.16.0.0/12').subnets(new_prefix=24)))
+rfc1918_prefixes.extend(list(ipa.IPv4Network('10.0.0.0/8').subnets(new_prefix=24)))
 def random_prefix(IPv4=True):
 	if IPv4:
 		return rfc1918_prefixes[sec.randrange(69888)]
@@ -110,7 +110,7 @@ if __name__ == '__main__':
 			with open('server.conf','a') as sfile:
 				sfile.write('\n')
 				sfile.write('[Peer]\n')
-				if psk == True:
+				if psk:
 					sfile.write('PresharedKey = {}\n'.format(client_key['psk']))
 				sfile.write('PublicKey = {}\n'.format(client_key['public']))
 				if ag.ipv6:
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 				cfile.write('MTU = 1420\n')
 				cfile.write('\n')
 				cfile.write('[Peer]\n')
-				if psk == True:
+				if psk:
 					cfile.write('PresharedKey = {}\n'.format(client_key['psk']))
 				cfile.write('PublicKey = {}\n'.format(client_key['public']))
 				# Server mode.
